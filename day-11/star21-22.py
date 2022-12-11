@@ -35,19 +35,19 @@ def read_inputs(inputs):
             monkey = Monkey(monkeys)
             monkeys[m.group(1)] = monkey
         else:
-            m = re.match("  Starting items: (.+)", input)
+            m = re.match("Starting items: (.+)", input)
             if m:
                 monkey.items = [ int(i) for i in m.group(1).split(", ") ]
             else:
-                m = re.match("  Operation: new = (.+)", input)
+                m = re.match("Operation: new = (.+)", input)
                 if m:
                     monkey.operation = m.group(1)
                 else:
-                    m = re.match("  Test: divisible by ([0-9]+)", input)
+                    m = re.match("Test: divisible by ([0-9]+)", input)
                     if m:
                         monkey.test = int(m.group(1))
                     else:
-                        m = re.match("    If (true|false): throw to monkey ([0-9]+)", input)
+                        m = re.match("If (true|false): throw to monkey ([0-9]+)", input)
                         if m:
                             monkey.if_[m.group(1) == "true"] = m.group(2)
                         else:
@@ -67,7 +67,7 @@ def calculate_monkey_business(monkeys, rounds, worry_divisor):
     inspections.sort(reverse=True)
     return inspections[0] * inspections[1]
 
-inputs = [ line.rstrip() for line in fileinput.input() ]
+inputs = [ line.strip() for line in fileinput.input() ]
 
 monkeys = read_inputs(inputs)
 print(f"star 21: {calculate_monkey_business(monkeys, 20, 3)}")
