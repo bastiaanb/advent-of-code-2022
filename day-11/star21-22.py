@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import fileinput
 import re
 import numpy as np
 
 @dataclass
 class Monkey:
-    items: list
-    operation: str
-    test: int
-    if_: dict
     all_monkeys: dict
+    items: list = field(default_factory=list)
+    operation: str = None
+    test: int = 0
+    if_: dict = field(default_factory=dict)
     inspections = 0
 
     def do_turn(self, product, worry_divisor):
@@ -25,44 +25,34 @@ class Monkey:
 
 def read_inputs(inputs):
     monkeys = OrderedDict()
-
-    monkey_id = None
-    items = []
-    operation = ""
-    test = ""
-    if_ = {}
+    monkey = None
 
     for input in inputs:
         if input == "":
             continue
         m = re.match("Monkey ([0-9]+):", input)
         if m:
-            if monkey_id:
-                monkeys[monkey_id] = Monkey(items, operation, test, if_, monkeys)
-            monkey_id = m.group(1)
-            if_ = {}
+            monkey = Monkey(monkeys)
+            monkeys[m.group(1)] = monkey
         else:
             m = re.match("  Starting items: (.+)", input)
             if m:
-                items = [ int(i) for i in m.group(1).split(", ") ]
+                monkey.items = [ int(i) for i in m.group(1).split(", ") ]
             else:
                 m = re.match("  Operation: new = (.+)", input)
                 if m:
-                    operation = m.group(1)
+                    monkey.operation = m.group(1)
                 else:
                     m = re.match("  Test: divisible by ([0-9]+)", input)
                     if m:
-                        test = int(m.group(1))
+                        monkey.test = int(m.group(1))
                     else:
                         m = re.match("    If (true|false): throw to monkey ([0-9]+)", input)
                         if m:
-                            if_[m.group(1) == "true"] = m.group(2)
+                            monkey.if_[m.group(1) == "true"] = m.group(2)
                         else:
                             print(f"unknown input '{input}'")
                             break
-
-        if monkey_id:
-            monkeys[monkey_id] = Monkey(items, operation, test, if_, monkeys)
 
     return monkeys
 
