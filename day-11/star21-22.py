@@ -25,34 +25,25 @@ class Monkey:
 
 def read_inputs(inputs):
     monkeys = OrderedDict()
-    monkey = None
 
     for input in inputs:
-        if input == "":
-            continue
-        m = re.match("Monkey ([0-9]+):", input)
-        if m:
-            monkey = Monkey(monkeys)
-            monkeys[m.group(1)] = monkey
-        else:
-            m = re.match("Starting items: (.+)", input)
-            if m:
-                monkey.items = [ int(i) for i in m.group(1).split(", ") ]
-            else:
-                m = re.match("Operation: new = (.+)", input)
-                if m:
-                    monkey.operation = m.group(1)
-                else:
-                    m = re.match("Test: divisible by ([0-9]+)", input)
-                    if m:
-                        monkey.test = int(m.group(1))
-                    else:
-                        m = re.match("If (true|false): throw to monkey ([0-9]+)", input)
-                        if m:
-                            monkey.if_[m.group(1) == "true"] = m.group(2)
-                        else:
-                            print(f"unknown input '{input}'")
-                            break
+        match input.replace(":", "").replace(",", "").split():
+            case []:
+                pass
+            case ["Monkey", id]:
+                monkey = Monkey(monkeys)
+                monkeys[id] = monkey
+            case ["Starting", "items", *items]:
+                monkey.items = [ int(i) for i in items ]
+            case ["Operation", "new", "=", *ops]:
+                monkey.operation = " ".join(ops)
+            case ["Test", "divisible", "by", divisor]:
+                monkey.test = int(divisor)
+            case ["If", true_false, "throw", "to", "monkey", throw_to]:
+                monkey.if_[true_false == "true"] = throw_to
+            case _:
+                print(f"unknown input '{input}'")
+                break
 
     return monkeys
 
@@ -70,6 +61,7 @@ def calculate_monkey_business(monkeys, rounds, worry_divisor):
 inputs = [ line.strip() for line in fileinput.input() ]
 
 monkeys = read_inputs(inputs)
+print(monkeys)
 print(f"star 21: {calculate_monkey_business(monkeys, 20, 3)}")
 
 monkeys = read_inputs(inputs)
