@@ -15,23 +15,24 @@ import functools
 # For example, if comparing [0,0,0] and 2, convert the right value to [2] (a list containing 2); the result is then found by instead comparing [0,0,0] and [2].
 
 def compare(left, right):
-    if isinstance(left, int):
-        if isinstance(right, int):
+    match isinstance(left, int), isinstance(right, int):
+        case True, True:
             return (left > right) - (left < right)
-        else:
+        case True, False:
             return compare([left], right)
-    else:
-        if isinstance(right, int):
+        case False, True:
             return compare(left, [right])
-        else:
-            if left == []:
-                return 0 if right == [] else -1
-
-            if right == []:
-                return 1
-
-            result = compare(left[0], right[0])
-            return compare(left[1:], right[1:]) if result == 0 else result
+        case False, False:
+            match left == [], right == []:
+                case True, True:
+                    return 0
+                case True, False:
+                    return -1
+                case False, True:
+                    return 1
+                case False, False:
+                    result = compare(left[0], right[0])
+                    return compare(left[1:], right[1:]) if result == 0 else result
 
 inputs = [ line.rstrip() for line in fileinput.input() ]
 pairs = [ (eval(inputs[i]), eval(inputs[i+1])) for i in range(0, len(inputs), 3) ]
